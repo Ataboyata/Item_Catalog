@@ -54,21 +54,20 @@ def edititem(category_id, item_id):
             item_to_edit.description = request.form['description']
         session.add(item_to_edit)
         session.commit()
-        return redirect('items.html', category_id = category_id)
+        return redirect(url_for('items.html', category_id = category_id))
     else:
         return render_template('edititem.html', category_id = category_id, item_to_edit = item_to_edit)
 
 
 @app.route('catalog/<int:category_id>/<int:item_id>/delete', methods=['GET', 'POST'])
-def deleteitem():
+def deleteitem(category_id, item_id):
     #This Page deletes an item
-
-
-
-
-
-
-
+    category = session.query(Category).filter_by(id = category_id).one()
+    item_to_delete = session.query(Item).filter_by(id = item_id).one()
+    if request.method == 'POST':
+        session.delete(item_to_delete)
+        session.commit()
+        return redirect(url_for('items.html', category_id = category_id, item_to_delete = item_to_delete))
 
 
 
