@@ -6,14 +6,14 @@ from sqlalchemy import create_engine
 Base = declarative_base()
 
 
-class Users(Base):
+class User(Base):
     __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
 
-class Categories(Base):
-    __tablename__ = 'categories'
+class Category(Base):
+    __tablename__ = 'category'
 
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
@@ -23,18 +23,18 @@ class Categories(Base):
         """Return object data in easily serializeable format"""
         return {
             'id': self.id,
-            'name': self.name,
+            'name': self.name
         }
 
 
-class Items(Base):
-    __tablename__ = 'items'
+class Item(Base):
+    __tablename__ = 'item'
 
     id = Column(Integer, primary_key=True)
     name = Column(String(80), nullable=False)
     description = Column(String(250))
-    category_id = Column(Integer, ForeignKey('categories.id'))
-    category = relationship(Categories)
+    category_id = Column(Integer, ForeignKey('category.id'))
+    category = relationship(Category)
 
 
     @property
@@ -44,6 +44,7 @@ class Items(Base):
             'id': self.id,
             'name': self.name,
             'description': self.description,
+            'category_id': self.category_id
         }
 
 
