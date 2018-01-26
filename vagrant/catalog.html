@@ -1,0 +1,21 @@
+<html>
+<head>
+	<link rel=stylesheet type=text/css href="{{url_for('static', filename='styles.css')}}">
+</head>
+<body>
+	<h1>Catalog App</h1>
+	<div class = 'left-side'>
+		<h2>Categories</h2>
+		{% for category in categories %}
+		<div>
+			<h3>{{category.name}}</h3>
+		</div>
+	<div class = 'right-side'>
+		<h2>Latest Items</h2>
+		{% for item in items %}
+		<div>
+			<h3>{{item.name}}</h3>
+		</div>
+	</div>
+</body>
+</html>

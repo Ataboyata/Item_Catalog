@@ -38,7 +38,6 @@ def displayitem():
     item = session.query(Item).filter_by(id=item_id).one()
     return render_template('item.html', item=item)
 
-
 @app.route('/catalog/new', methods=['GET', 'POST'])
 def createitem(category_name):
     # This Page creates a new item
