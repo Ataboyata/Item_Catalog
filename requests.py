@@ -37,9 +37,16 @@ def displayitem():
 
 
 @app.route('/catalog/new', methods=['GET', 'POST'])
-def createitem():
+def createitem(category_name):
     #This Page creates a new item
-
+    if request.method == 'POST':
+        category = session.query(Category).filter_by(name = request.form['category_name']).one()
+        item_to_create = Item(name = request.form['name'], description = request.form['description'], category_id = category.id)
+        session.add(item_to_create)
+        session.commit()
+        return redirect(url_for('items.html', category_id = category_id))
+    else:
+        return render_template('newitem.html', category_id = category_id)
 
 
 @app.route('catalog/<int:category_id>/<int:item_id>/edit', methods=['GET', 'POST'])
@@ -68,9 +75,8 @@ def deleteitem(category_id, item_id):
         session.delete(item_to_delete)
         session.commit()
         return redirect(url_for('items.html', category_id = category_id, item_to_delete = item_to_delete))
-
-
-
+    else:
+        return render_template('deleteitem.html', category_id = category_id, item_id = item_id)
 
 @app.route('catalog/<int:category_id>/JSON')
 def itemsincategoryJSON(category_id):
