@@ -52,44 +52,34 @@ def createitem():
         return render_template('newitem.html')
 
 
-
-
-@app.route('/catalog/<int:category_id>/<int:item_id>/edit', methods=['GET', 'POST'])
-def edititem(category_id, item_id):
+@app.route('/catalog/item/<int:item_id>/edit', methods=['GET', 'POST'])
+def edititem(item_id):
     # This Page edits an item
-    category = session.query(Category).filter_by(id=category_id).one()
     item_to_edit = session.query(Item).filter_by(id=item_id).one()
     if request.method == 'POST':
         if request.form['name']:
             item_to_edit.name = request.form['name']
         if request.form['description']:
             item_to_edit.description = request.form['description']
+        if request.form['category_id']:
+            item_to_edit.category_id = request.form['category_id']
         session.add(item_to_edit)
         session.commit()
-        return redirect(url_for('displayeverything', category_id=category_id))
+        return redirect(url_for('displayeverything'))
     else:
-        return render_template('edititem.html', category_id=category_id, item_to_edit=item_to_edit)
+        return render_template('edititem.html', item_to_edit=item_to_edit)
 
 
-@app.route('/catalog/<int:category_id>/<int:item_id>/delete',
-    methods=['GET', 'POST'])
-def deleteitem(category_id, item_id):
+@app.route('/catalog/item/<int:item_id>/delete', methods=['GET', 'POST'])
+def deleteitem(item_id):
     # This Page deletes an item
-    category = session.query(Category).filter_by(id=category_id).one()
     item_to_delete = session.query(Item).filter_by(id=item_id).one()
     if request.method == 'POST':
         session.delete(item_to_delete)
         session.commit()
-        return redirect(
-            url_for(
-                'displayeverything',
-                category_id=category_id,
-                item_to_delete=item_to_delete))
+        return redirect(url_for('displayeverything'))
     else:
-        return render_template(
-            'deleteitem.html',
-            category_id=category_id,
-            item_id=item_id)
+        return render_template('deleteitem.html', item_id=item_id)
 
 
 # JSON API Endpoints
