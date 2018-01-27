@@ -1,17 +1,17 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
-from sqlalchemy import create_engine
+from flask import Flask, render_template, request, redirect, url_for, jsonify, make_response
+from sqlalchemy import create_engine, or_
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Category, Item
-import json
 
 from flask import session as login_session
 import random, string
 
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
+from oauth2client.client import AccessTokenCredentials
 import httplib2
-from flask import make_response
 import requests
+import json
 
 app = Flask(__name__)
 
@@ -30,10 +30,9 @@ def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state
-    # return "The current session state is %s" % login_session['state']
     return render_template('login.html', STATE=state)
 
-# Google Authentication
+
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     # Validate state token
@@ -65,6 +64,7 @@ def gconnect():
     if result.get('error') is not None:
         response = make_response(json.dumps(result.get('error')), 500)
         response.headers['Content-Type'] = 'application/json'
+        return response
 
     # Verify that the access token is used for the intended user.
     gplus_id = credentials.id_token['sub']
@@ -82,16 +82,15 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    stored_credentials = login_session.get('credentials')
+    stored_access_token = login_session.get('access_token')
     stored_gplus_id = login_session.get('gplus_id')
-    if stored_credentials is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
-                                 200)
+    if stored_access_token is not None and gplus_id == stored_gplus_id:
+        response = make_response(json.dumps('Current user is already connected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
     # Store the access token in the session for later use.
-    login_session['credentials'] = credentials.access_token
+    login_session['access_token'] = credentials.access_token
     login_session['gplus_id'] = gplus_id
 
     # Get user info
@@ -101,13 +100,12 @@ def gconnect():
 
     data = answer.json()
 
-    login_session['provider'] = 'google'
     login_session['username'] = data['name']
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
 
-    #see if user exists, if it doesn't make a new one
-    user_id = getUserId(login_session['email'])
+    # See if a user exists if not make a new one
+    user_id = getUserID(login_session['email'])
     if not user_id:
         user_id = createUser(login_session)
     login_session['user_id'] = user_id
@@ -118,12 +116,15 @@ def gconnect():
     output += '!</h1>'
     output += '<img src="'
     output += login_session['picture']
-    output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
+    output += ' " style = "width: 300px; height: 300px;\
+                border-radius: 150px;-webkit-border-radius: 150px;\
+                -moz-border-radius: 150px;"> '
     flash("you are now logged in as %s" % login_session['username'])
+    print "done!"
     return output
 
-# User Helper Functions
 
+# User Helper Functions
 def createUser(login_session):
     newUser = User(name=login_session['username'], email=login_session[
                    'email'], picture=login_session['picture'])
@@ -272,5 +273,6 @@ def itemJSON(item_id):
 
 
 if __name__ == '__main__':
+    app.secret_key = 'T59cRmgQxRcZ7DnB5W3LaRLF'
     app.debug = True
     app.run(host='0.0.0.0', port=8000)
