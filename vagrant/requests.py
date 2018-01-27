@@ -79,7 +79,7 @@ def deleteitem(item_id):
         session.commit()
         return redirect(url_for('displayeverything'))
     else:
-        return render_template('deleteitem.html', item_id=item_id)
+        return render_template('deleteitem.html', item_to_delete=item_to_delete)
 
 
 # JSON API Endpoints
