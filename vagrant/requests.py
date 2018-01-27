@@ -26,8 +26,7 @@ def displayeverything():
 def displayitems(category_id):
     # This Page displays items for a specific category
     categories = session.query(Category).all()
-    category = session.query(Category).filter_by(id=category_id).one()
-    items = session.query(Item).all()
+    items = session.query(Item).filter_by(category_id=category_id).all()
     return render_template('items.html', categories=categories, items=items)
 
 

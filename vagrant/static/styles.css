@@ -1,0 +1,25 @@
+* {
+    box-sizing: border-box;
+    font-family: 'Helvetica', sans-serif;
+    font-weight: bold;
+    font-size: 14pt;
+    background-color: #f1eee8;
+}
+
+embed,object,video {
+    max-width: 100%;
+}
+
+h1 {
+    font-family: 'Helvetica', sans-serif;
+    color:cadetblue;
+}
+
+h2 {
+    font-family: 'Helvetica', sans-serif;
+}
+
+h3 {
+    font-family: 'Helvetica', sans-serif;
+    color:darkgray
+}
