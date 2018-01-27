@@ -23,3 +23,15 @@ h3 {
     font-family: 'Helvetica', sans-serif;
     color:darkgray;
 }
+
+.left-side{
+    float:left;
+    clear:left;
+    width: 50%;
+}
+
+.right-side{
+    float:right;
+    clear:right;
+    width: 50%;
+}
