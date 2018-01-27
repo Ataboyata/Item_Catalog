@@ -8,8 +8,9 @@
 		<div class = 'left-side'>
 			<h2>Categories</h2>
 			{% for category in categories %}
-			<div class=''>
-				<h3>{{category.name}}</h3>
+			<div>
+				<a href = "{{url_for('displayitems', category_id = category.id)}}">
+					<h3>{{category.name}}</h3></a>
 			</div>
 			{% endfor %}
 		</div>

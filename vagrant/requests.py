@@ -30,12 +30,12 @@ def displayitems(category_id):
     return render_template('items.html', categories=categories, items=items)
 
 
-@app.route('/catalog/<int:category_id>/<int:item_id>')
-def displayitem():
+@app.route('/catalog/item/<int:item_id>')
+def displayitem(item_id):
     # This Page displays the description of a specific item
-    category = session.query(Category).filter_by(id=category_id).one()
     item = session.query(Item).filter_by(id=item_id).one()
     return render_template('item.html', item=item)
+
 
 @app.route('/catalog/new', methods=['GET', 'POST'])
 def createitem(category_name):
