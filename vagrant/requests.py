@@ -4,6 +4,15 @@ from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Category, Item
 import json
 
+from flask import session as login_session
+import random, string
+
+from oauth2client.client import flow_from_clientsecrets
+from oauth2client.client import FlowExchangeError
+import httplib2
+from flask import make_response
+import requests
+
 app = Flask(__name__)
 
 CLIENT_ID = json.loads(
@@ -94,6 +103,7 @@ def gconnect():
 
     login_session['provider'] = 'google'
     login_session['username'] = data['name']
+    login_session['picture'] = data['picture']
     login_session['email'] = data['email']
 
     #see if user exists, if it doesn't make a new one
@@ -196,6 +206,8 @@ def displayitem(item_id):
 @app.route('/catalog/item/new', methods=['GET', 'POST'])
 def createitem():
     # This Page creates a new item
+    if 'username' not in login_session:
+        return redirect('/login')
     if request.method == 'POST':
         item_to_create = Item(
             name=request.form['name'],
@@ -211,6 +223,8 @@ def createitem():
 @app.route('/catalog/item/<int:item_id>/edit', methods=['GET', 'POST'])
 def edititem(item_id):
     # This Page edits an item
+    if 'username' not in login_session:
+        return redirect('/login')
     item_to_edit = session.query(Item).filter_by(id=item_id).one()
     if request.method == 'POST':
         if request.form['name']:
@@ -229,6 +243,8 @@ def edititem(item_id):
 @app.route('/catalog/item/<int:item_id>/delete', methods=['GET', 'POST'])
 def deleteitem(item_id):
     # This Page deletes an item
+    if 'username' not in login_session:
+        return redirect('/login')
     item_to_delete = session.query(Item).filter_by(id=item_id).one()
     if request.method == 'POST':
         session.delete(item_to_delete)
