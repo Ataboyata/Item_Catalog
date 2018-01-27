@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import User, Category, Item
+from database_setup import Base, User, Category, Item
 import json
 
 app = Flask(__name__)
@@ -50,13 +50,12 @@ def createitem(category_name):
             category_id=category.id)
         session.add(item_to_create)
         session.commit()
-        return redirect(url_for('items.html', category_id=category_id))
+        return redirect(url_for('displayeverything', category_id=category_id))
     else:
         return render_template('newitem.html', category_id=category_id)
 
 
-@app.route('catalog/<int:category_id>/<int:item_id>/edit', methods=[
-    'GET', 'POST'])
+@app.route('/catalog/<int:category_id>/<int:item_id>/edit', methods=['GET', 'POST'])
 def edititem(category_id, item_id):
     # This Page edits an item
     category = session.query(Category).filter_by(id=category_id).one()
@@ -68,16 +67,12 @@ def edititem(category_id, item_id):
             item_to_edit.description = request.form['description']
         session.add(item_to_edit)
         session.commit()
-        return redirect(url_for('items.html', category_id=category_id))
+        return redirect(url_for('displayeverything', category_id=category_id))
     else:
-        return render_template(
-            'edititem.html',
-            category_id=category_id,
-            item_to_edit=item_to_edit)
+        return render_template('edititem.html', category_id=category_id, item_to_edit=item_to_edit)
 
 
-@app.route(
-    'catalog/<int:category_id>/<int:item_id>/delete',
+@app.route('/catalog/<int:category_id>/<int:item_id>/delete',
     methods=['GET', 'POST'])
 def deleteitem(category_id, item_id):
     # This Page deletes an item
@@ -88,7 +83,7 @@ def deleteitem(category_id, item_id):
         session.commit()
         return redirect(
             url_for(
-                'items.html',
+                'displayeverything',
                 category_id=category_id,
                 item_to_delete=item_to_delete))
     else:
@@ -98,7 +93,7 @@ def deleteitem(category_id, item_id):
             item_id=item_id)
 
 
-@app.route('catalog/<int:category_id>/JSON')
+@app.route('/catalog/<int:category_id>/JSON')
 def itemsincategoryJSON(category_id):
     category = session.query(Category).filter_by(id=category_id).one()
     items = session.query(Item).filter_by(category_id=category_id).all()
@@ -114,4 +109,4 @@ def itemJSON(category_id, item_id):
 
 if __name__ == '__main__':
     app.debug = True
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=8000)

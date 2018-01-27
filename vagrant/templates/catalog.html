@@ -1,0 +1,28 @@
+<html>
+<head>
+	<link rel=stylesheet type=text/css href="{{url_for('static', filename='styles.css')}}">
+</head>
+<body>
+	<h1>Races Catalog</h1>
+	<div>
+		<br>
+		<div class = 'left-side'>
+			<h2>Categories</h2>
+			{% for category in categories %}
+			<div class=''>
+				<h3>{{category.name}}</h3>
+			</div>
+			{% endfor %}
+		</div>
+		<br>
+		<div class = 'right-side'>
+			<h2>Items</h2>
+			{% for item in items %}
+			<div>
+				<h3>{{item.name}}</h3>
+			</div>
+			{% endfor %}
+		</div>
+	</div>
+</body>
+</html>
