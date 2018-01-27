@@ -15,7 +15,8 @@
 			{% endfor %}
 		</div>
 		<div class = 'right-side'>
-			<h2>Items</h2>
+			<a href = "{{url_for('createitem')}}"><h3>Add Race</h3></a>
+			<h2>Races</h2>
 			{% for item in items %}
 			<div>
 				<a href = "{{url_for('displayitem', item_id = item.id)}}"><h3>{{item.name}}</h3></a>

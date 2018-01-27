@@ -38,20 +38,20 @@ def displayitem(item_id):
 
 
 @app.route('/catalog/new', methods=['GET', 'POST'])
-def createitem(category_name):
+def createitem():
     # This Page creates a new item
     if request.method == 'POST':
-        category = session.query(Category).filter_by(
-            name=request.form['category_name']).one()
         item_to_create = Item(
             name=request.form['name'],
             description=request.form['description'],
-            category_id=category.id)
+            category_id=request.form['category_id'])
         session.add(item_to_create)
         session.commit()
-        return redirect(url_for('displayeverything', category_id=category_id))
+        return redirect(url_for('displayeverything'))
     else:
-        return render_template('newitem.html', category_id=category_id)
+        return render_template('newitem.html')
+
+
 
 
 @app.route('/catalog/<int:category_id>/<int:item_id>/edit', methods=['GET', 'POST'])
