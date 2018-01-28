@@ -16,11 +16,12 @@ class User(Base):
 
     @property
     def serialize(self):
-    # Returns an object data in easily serializeable format
+        """Return object data in easily serializeable format"""
         return {
             'name': self.name,
             'id': self.id,
         }
+
 
 class Category(Base):
     __tablename__ = 'category'
@@ -45,7 +46,6 @@ class Item(Base):
     description = Column(String(250))
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship(Category)
-
 
     @property
     def serialize(self):
