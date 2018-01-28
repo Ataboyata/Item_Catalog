@@ -30,15 +30,15 @@ session = DBSession()
 
 # Creates a login required function to be used repeatedly for authentication
 # in other code
-# def login_required(f):
-#    @wraps(f)
-#    def decorated_function(*args, **kwargs):
-#        if 'username' in login_session:
-#            return f(*args, **kwargs)
-#        else:
-#            flash("You are not allowed to access there")
-#            return redirect('/login')
-#    return decorated_function
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' in login_session:
+            return f(*args, **kwargs)
+        else:
+            flash("You are not allowed to access there")
+            return redirect('/login')
+    return decorated_function
 
 # User Helper Functions
 def createUser(login_session):
@@ -220,11 +220,9 @@ def displayitem(item_id):
 
 
 @app.route('/catalog/item/new', methods=['GET', 'POST'])
-# @login_required
+@login_required
 def createitem():
     # This Page creates a new item
-    if 'username' not in login_session:
-        return redirect('/login')
     if request.method == 'POST':
         item_to_create = Item(
             name=request.form['name'],
@@ -239,11 +237,9 @@ def createitem():
 
 
 @app.route('/catalog/item/<int:item_id>/edit', methods=['GET', 'POST'])
-# @login_required
+@login_required
 def edititem(item_id):
     # This Page edits an item
-    if 'username' not in login_session:
-        return redirect('/login')
     item_to_edit = session.query(Item).filter_by(id=item_id).one_or_none()
     if item_to_edit.user_id != login_session['user_id']:
         return redirect(url_for('displayeverything'))
@@ -262,11 +258,9 @@ def edititem(item_id):
 
 
 @app.route('/catalog/item/<int:item_id>/delete', methods=['GET', 'POST'])
-# @login_required
+@login_required
 def deleteitem(item_id):
     # This Page deletes an item
-    if 'username' not in login_session:
-        return redirect('/login')
     item_to_delete = session.query(Item).filter_by(id=item_id).one_or_none()
     if item_to_delete.user_id != login_session['user_id']:
         return redirect(url_for('displayeverything'))
