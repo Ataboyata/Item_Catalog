@@ -244,10 +244,9 @@ def edititem(item_id):
     # This Page edits an item
     if 'username' not in login_session:
         return redirect('/login')
-    creator = getUserInfo(Item.user_id)
-    if creator.id != login_session['user_id']:
-        return redirect(url_for('displayeverything'))
     item_to_edit = session.query(Item).filter_by(id=item_id).one_or_none()
+    if item_to_edit.user_id != login_session['user_id']:
+        return redirect(url_for('displayeverything'))
     if request.method == 'POST':
         if request.form['name']:
             item_to_edit.name = request.form['name']
@@ -268,10 +267,9 @@ def deleteitem(item_id):
     # This Page deletes an item
     if 'username' not in login_session:
         return redirect('/login')
-    creator = getUserInfo(Item.user_id)
-    if creator.id != login_session['user_id']:
-        return redirect(url_for('displayeverything'))
     item_to_delete = session.query(Item).filter_by(id=item_id).one_or_none()
+    if item_to_delete.user_id != login_session['user_id']:
+        return redirect(url_for('displayeverything'))
     if request.method == 'POST':
         session.delete(item_to_delete)
         session.commit()
