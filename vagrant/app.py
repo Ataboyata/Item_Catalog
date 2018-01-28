@@ -40,6 +40,7 @@ def login_required(f):
             return redirect('/login')
     return decorated_function
 
+
 # User Helper Functions
 def createUser(login_session):
     newUser = User(name=login_session['username'], email=login_session[
