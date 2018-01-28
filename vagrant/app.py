@@ -27,6 +27,18 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
 
+# Creates a login required function to be used repeatedly in other code
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'username' in login_session:
+            return f(*args, **kwargs)
+        else:
+            flash(“You are not allowed to access there")
+            return redirect('/login')
+    return decorated_function
+
+
 # User Helper Functions
 def createUser(login_session):
     newUser = User(name=login_session['username'], email=login_session[
@@ -202,15 +214,14 @@ def displayitems(category_id):
 @app.route('/catalog/item/<int:item_id>')
 def displayitem(item_id):
     # This Page displays the description of a specific item
-    item = session.query(Item).filter_by(id=item_id).one()
+    item = session.query(Item).filter_by(id=item_id).one_or_none()
     return render_template('item.html', item=item)
 
 
 @app.route('/catalog/item/new', methods=['GET', 'POST'])
+@login_required
 def createitem():
     # This Page creates a new item
-    if 'username' not in login_session:
-        return redirect('/login')
     if request.method == 'POST':
         item_to_create = Item(
             name=request.form['name'],
@@ -224,11 +235,10 @@ def createitem():
 
 
 @app.route('/catalog/item/<int:item_id>/edit', methods=['GET', 'POST'])
+@login_required
 def edititem(item_id):
     # This Page edits an item
-    if 'username' not in login_session:
-        return redirect('/login')
-    item_to_edit = session.query(Item).filter_by(id=item_id).one()
+    item_to_edit = session.query(Item).filter_by(id=item_id).one_or_none()
     if request.method == 'POST':
         if request.form['name']:
             item_to_edit.name = request.form['name']
@@ -244,11 +254,10 @@ def edititem(item_id):
 
 
 @app.route('/catalog/item/<int:item_id>/delete', methods=['GET', 'POST'])
+@login_required
 def deleteitem(item_id):
     # This Page deletes an item
-    if 'username' not in login_session:
-        return redirect('/login')
-    item_to_delete = session.query(Item).filter_by(id=item_id).one()
+    item_to_delete = session.query(Item).filter_by(id=item_id).one_or_none()
     if request.method == 'POST':
         session.delete(item_to_delete)
         session.commit()
@@ -263,7 +272,7 @@ def deleteitem(item_id):
 @app.route('/catalog/category/<int:category_id>/JSON')
 def itemsincategoryJSON(category_id):
     """JSON Endpoint that shows all items in one category """
-    category = session.query(Category).filter_by(id=category_id).one()
+    category = session.query(Category).filter_by(id=category_id).one_or_none()
     items = session.query(Item).filter_by(category_id=category_id).all()
     return jsonify(CategoryItems=[i.serialize for i in items])
 
@@ -271,7 +280,7 @@ def itemsincategoryJSON(category_id):
 @app.route('/catalog/item/<int:item_id>/JSON')
 def itemJSON(item_id):
     """JSON Endpoint that information for one specific item"""
-    item = session.query(Item).filter_by(id=item_id).one()
+    item = session.query(Item).filter_by(id=item_id).one_or_none()
     return jsonify(item=item.serialize)
 
 
