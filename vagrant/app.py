@@ -1,9 +1,10 @@
 from flask import Flask, render_template, request, redirect
-from flask import url_for, jsonify, make_response
+from flask import url_for, jsonify, make_response, g, flash
 from sqlalchemy import create_engine, or_
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, User, Category, Item
 
+from functools import wraps
 from flask import session as login_session
 import random
 import string
@@ -34,7 +35,7 @@ def login_required(f):
         if 'username' in login_session:
             return f(*args, **kwargs)
         else:
-            flash(“You are not allowed to access there")
+            flash("You are not allowed to access there")
             return redirect('/login')
     return decorated_function
 
@@ -226,7 +227,8 @@ def createitem():
         item_to_create = Item(
             name=request.form['name'],
             description=request.form['description'],
-            category_id=request.form['category_id'])
+            category_id=request.form['category_id'],
+            user_id=login_session['user_id'])
         session.add(item_to_create)
         session.commit()
         return redirect(url_for('displayeverything'))
