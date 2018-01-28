@@ -13,53 +13,49 @@
 </head>
 
 <body>
-	<a href = "{{url_for('displayeverything')}}"><h1>Races Catalog</h1></a>
-	<div id="signinButton">
-		<span class="g-signin"
-		data-scope="openid email"
-		data-clientid="259542285741-58sm3uf2fhvgai6ggea11fp82qhefv3v.apps.googleusercontent.com"
-		data-redirecturi="postmessage"
-		data-accesstype="offline"
-		data-cookiepolicy="single_host_origin"
-		data-callback="signInCallback"
-		data-approvalprompt="force">
-		</span>
-	</div>
+  <a href = "{{url_for('displayeverything')}}"><h1>Races Catalog</h1></a>
+  <div class = "container">
+    <div id="signInButton">
+          <span class="g-signin"
+            data-scope="openid email"
+            data-clientid="259542285741-58sm3uf2fhvgai6ggea11fp82qhefv3v.apps.googleusercontent.com"
+            data-redirecturi="postmessage"
+            data-accesstype="offline"
+            data-cookiepolicy="single_host_origin"
+            data-callback="signInCallback"
+            data-approvalprompt="force">
+          </span>
+    </div>
+  </div >
 
 <script>
-function signInCallback(authResult) {
-  if (authResult['code']) {
+    function signInCallback(authResult) {
+      if (authResult['code']) {
+        // Hide the sign-in button now that the user is authorized
+        $('#signinButton').attr('style', 'display: none');
 
-    // Hide the sign-in button now that the user is authorized
-    $('#signinButton').attr('style', 'display: none');
-
-    // Send the one-time-use code to the server, if the server responds, write a 'login successful' message to the web page and then redirect back to the main restaurants page
-    $.ajax({
-      type: 'POST',
-      url: '/gconnect?state={{STATE}}',
-      processData: false,
-      data: authResult['code'],
-      contentType: 'application/octet-stream; charset=utf-8',
-      success: function(result) {
-        // Handle or verify the server response if necessary.
-        if (result) {
-          $('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
-         setTimeout(function() {
-          window.location.href = "/restaurant";
-         }, 4000);
-          
-
-      } else if (authResult['error']) {
-
-    console.log('There was an error: ' + authResult['error']);
-  } else {
-        $('#result').html('Failed to make a server-side call. Check your configuration and console.');
-         }
-
+        // Send the one-time-use code to the server, if the server responds, write a 'login successful' message to the web page and then redirect back to the main restaurants page
+        $.ajax({
+          type: 'POST',
+          url: '/gconnect?state={{STATE}}',
+          processData: false,
+          data: authResult['code'],
+          contentType: 'application/octet-stream; charset=utf-8',
+          success: function(result) {
+                // Handle or verify the server response if necessary.
+                if (result) {
+                  $('#login').html('Logging in...')
+              window.location.href = "/catalog";
+            } else if (authResult['error']) {
+              console.log('There was an error: ' + authResult['error']);
+            } else {
+              $('#login').html('Failed to make a server-side call. Check your configuration and console.');
+            }
+          }
+        });
       }
-      
-  }); } }
-</script>
+    }
+  </script>
 
 </body>
 
