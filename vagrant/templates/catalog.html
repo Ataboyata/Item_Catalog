@@ -11,8 +11,11 @@
 </head>
 <body>
 	<a href = "{{url_for('displayeverything')}}"><h1>Races Catalog</h1></a>
-	<a href="{{ url_for('login') }}">Log in</a>
-    <a href="{{ url_for('gdisconnect') }}">Sign out</a>
+	{% if 'username' not in session %}
+		<a href="{{ url_for('login') }}">Log in</a>
+	{% else %}
+    	<a href="{{ url_for('gdisconnect') }}">Sign out</a>
+	{% endif %}
 	<div>
 		<div class = 'left-side'>
 			<h2>Categories</h2>
