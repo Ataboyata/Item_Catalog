@@ -1,3 +1,4 @@
+#Race Catalog App
 ##Contents
 *app.py: contains all the backend python code to manage users, CRUD operations, etc
 *database_setup.py: contains the necessary code to start a Postgre SQL database
